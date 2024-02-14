@@ -19,6 +19,11 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final OnAudioQuery _audioQuery = OnAudioQuery();
   List<SongModel> songs = [];
+  List<SongModel> filteredSongs = [];
+  bool isSearching = false;
+  String searchText = '';
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
   final LinearGradient gradient = LinearGradient(
     begin: Alignment.centerLeft,
     end: Alignment.centerRight,
@@ -33,58 +38,123 @@ class _HomeScreenState extends State<HomeScreen> {
     _audioQuery.setLogConfig(logConfig);
   }
 
+  void _onSeachTextChanged({required String text}) {
+    print(text);
+    setState(() {
+      filteredSongs = songs
+          .where((song) =>
+              song.title.toLowerCase().contains(text.toLowerCase()) ||
+              song.artist!.toLowerCase().contains(text.toLowerCase()))
+          .toList();
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Music App'),
-          backgroundColor: Colors.transparent,
-          elevation: 2.0,
-          flexibleSpace: AnimateGradient(
-            primaryColors: [
-              Color.fromARGB(255, 239, 80, 167),
-              Color.fromARGB(255, 47, 20, 80),
-              Color.fromARGB(255, 116, 14, 119),
-            ],
-            secondaryColors: [
-              Color.fromARGB(255, 80, 228, 239),
-              Color.fromARGB(255, 38, 64, 53),
-              Color.fromARGB(255, 14, 23, 119),
-            ],
-          ),
-          actions: [
-            IconButton(
-                onPressed: () {},
-                icon: Padding(
-                  padding: const EdgeInsets.only(right: 30),
-                  child: Icon(Icons.search),
-                ))
-          ],
-        ),
         body: songs == null
             ? Center(
                 child: Text('Searching For Songs'),
               )
-            : AnimateGradient(
-                primaryColors: const [
-                  Color.fromARGB(255, 116, 14, 119),
-                  Color.fromARGB(255, 43, 27, 62),
-                  Color.fromARGB(255, 239, 80, 167),
+            : NestedScrollView(
+                floatHeaderSlivers: true,
+                headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                  SliverAppBar(
+                    title: isSearching
+                        ? Container(
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: TextField(
+                              cursorRadius: Radius.circular(1),
+                              cursorWidth: 2,
+                              focusNode: _focusNode,
+                              controller: _searchController,
+                              onChanged: (value) {
+                                _onSeachTextChanged(text: value);
+                              },
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide.none,
+                                ),
+                                hintText: 'Search Songs',
+                                hintStyle: TextStyle(color: Colors.grey),
+                                contentPadding:
+                                    EdgeInsets.fromLTRB(16, 20, 16, 8),
+                              ),
+                            ),
+                          )
+                        : Text('Music App'),
+                    floating: true,
+                    snap: true,
+                    backgroundColor: Colors.transparent,
+                    flexibleSpace: AnimateGradient(
+                      primaryColors: [
+                        Color.fromARGB(255, 239, 80, 167),
+                        Color.fromARGB(255, 47, 20, 80),
+                        Color.fromARGB(255, 116, 14, 119),
+                      ],
+                      secondaryColors: [
+                        Color.fromARGB(255, 80, 228, 239),
+                        Color.fromARGB(255, 38, 64, 53),
+                        Color.fromARGB(255, 14, 23, 119),
+                      ],
+                    ),
+                    actions: [
+                      Container(
+                        margin: EdgeInsets.only(right: 30),
+                        child: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              isSearching = !isSearching;
+                            });
+                          },
+                          icon: Icon(isSearching ? Icons.close : Icons.search),
+                        ),
+                      )
+                    ],
+                  )
                 ],
-                secondaryColors: const [
-                  Color.fromARGB(255, 14, 23, 119),
-                  Color.fromARGB(255, 38, 64, 53),
-                  Color.fromARGB(255, 80, 228, 239),
-                ],
-                child: ListView.builder(
-                  itemCount: songs.length,
-                  itemBuilder: (context, index) {
-                    return SongTile(
-                      song: songs[index],
-                      audioQuery: _audioQuery,
-                    );
-                  },
+                body: AnimateGradient(
+                  primaryColors: const [
+                    Color.fromARGB(255, 116, 14, 119),
+                    Color.fromARGB(255, 43, 27, 62),
+                    Color.fromARGB(255, 239, 80, 167),
+                  ],
+                  secondaryColors: const [
+                    Color.fromARGB(255, 14, 23, 119),
+                    Color.fromARGB(255, 38, 64, 53),
+                    Color.fromARGB(255, 80, 228, 239),
+                  ],
+                  child: isSearching
+                      ? ListView.builder(
+                          itemCount: filteredSongs.length,
+                          itemBuilder: (context, index) {
+                            return SongTile(
+                                song: filteredSongs[index],
+                                audioQuery: _audioQuery);
+                          },
+                        )
+                      : ListView.builder(
+                          itemCount: songs.length,
+                          itemBuilder: (context, index) {
+                            return SongTile(
+                              song: songs[index],
+                              audioQuery: _audioQuery,
+                            );
+                          },
+                        ),
                 ),
               ),
       ),

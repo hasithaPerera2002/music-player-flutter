@@ -15,7 +15,12 @@ class MusicApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData.dark(),
+      theme: ThemeData.dark().copyWith(
+        inputDecorationTheme: InputDecorationTheme(
+          fillColor: Colors.black,
+          filled: true,
+        ),
+      ),
       routes: {
         "/": (context) => StartScreen(),
         "/home": (context) => HomeScreen(),
