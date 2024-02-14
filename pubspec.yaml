@@ -38,6 +38,9 @@ dependencies:
   on_audio_query: ^2.9.0
   permission_handler: ^11.3.0
   audioplayers: ^5.2.1
+  assets_audio_player: ^3.1.1
+  google_nav_bar: ^5.0.6
+assets_audio_player: ^3.1.1
 
 dev_dependencies:
   flutter_test:
