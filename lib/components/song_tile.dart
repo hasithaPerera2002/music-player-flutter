@@ -18,38 +18,41 @@ class _SongTileState extends State<SongTile> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-        title: SizedBox(
-          height: 20,
-          child: Text(
-            widget.song.title,
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
-        subtitle: Text(
-          widget.song.artist ?? 'Unknown Artist',
+      title: SizedBox(
+        height: 25,
+        child: Text(
+          widget.song.title,
           style: const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w300,
+            fontSize: 15,
+            fontWeight: FontWeight.w400,
           ),
         ),
-        isThreeLine: false,
-        leading: QueryArtworkWidget(
-          id: widget.song.id,
-          type: ArtworkType.AUDIO,
-          artworkFit: BoxFit.cover,
-          controller: widget.audioQuery,
-          artworkBorder: BorderRadius.circular(10),
-          artworkHeight: 80,
-          artworkWidth: 50,
+      ),
+      subtitle: Text(
+        widget.song.artist ?? 'Unknown Artist',
+        style: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w300,
         ),
-        trailing: IconButton(
-          icon: const Icon(Icons.play_arrow),
-          onPressed: () {
-            //  widget.audioQuery.play(musicId: widget.song.id);
-          },
-        ));
+      ),
+      isThreeLine: false,
+      leading: QueryArtworkWidget(
+        id: widget.song.id,
+        type: ArtworkType.AUDIO,
+        artworkFit: BoxFit.cover,
+        controller: widget.audioQuery,
+        artworkBorder: BorderRadius.circular(10),
+        artworkHeight: 80,
+        artworkWidth: 50,
+      ),
+      trailing: IconButton(
+        icon: const Icon(Icons.more_vert_sharp),
+        onPressed: () {
+          //  widget.audioQuery.play(musicId: widget.song.id);
+        },
+      ),
+      onLongPress: () {},
+      onTap: () {},
+    );
   }
 }

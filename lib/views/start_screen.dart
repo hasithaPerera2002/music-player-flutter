@@ -9,7 +9,7 @@ class StartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Future.delayed(
-      Duration(seconds: 5),
+      Duration(seconds: 1),
       () {
         Navigator.pushReplacementNamed(context, "/home");
       },
